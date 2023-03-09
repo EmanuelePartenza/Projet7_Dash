@@ -12,14 +12,16 @@ prediction = prediction.to_dict(orient='index')
 
 app = dash.Dash()
 app.layout = html.Div([
-    dcc.Dropdown(id_list, 'None', id='Id_dropdown'),
-    html.Div(id='dd-output-container')
+    html.Label('Inserez le code du client'),
+        dcc.Dropdown(id_list, 'None', id='input_dropdown_id'),
+    html.Div(id='output_dropdown_id')
 ])
 
 @app.callback(
-    Output('dd-output-container', 'children'),
-    Input('Id_dropdown', 'value')
+    Output('output_dropdown_id', 'children'),
+    Input('input_dropdown_id', 'value')
 )
+
 def update_output(value):
     if value in id_list:
         plot_bgcolor = "#def"
@@ -53,7 +55,7 @@ def update_output(value):
                 paper_bgcolor=plot_bgcolor,
                 annotations=[
                         go.layout.Annotation(
-                        text=f"<b>IOT sensot value:</b><br>{current_value} units",
+                        text=f"<b>Score:</b><br>{round(current_value,5)*100} %",
                         x=0.5, xanchor="center", xref="paper",
                         y=0.25, yanchor="bottom", yref="paper",
                         showarrow=False,
@@ -76,13 +78,6 @@ def update_output(value):
                 ]
             )
         )
-
-
-
-
-
-
-
         # fig = go.Figure(go.Indicator(
         #     mode = "delta+gauge+number",
         #     gauge = {'axis': {'range': [0, 1]},
@@ -94,19 +89,9 @@ def update_output(value):
         #     domain = {'x': [0, 1], 'y': [0, 1]}
         # ))
         # fig.update_layout(paper_bgcolor = "lavender", font = {'color': "darkblue", 'family': "Arial"})
-
-    else :
-        fig = go.Figure(go.Indicator(
-            mode = "gauge",
-            gauge = {'axis': {'range': [0, 1]}},
-            value = 0,
-            title = {'text': "prediction"},
-            domain = {'x': [0, 1], 'y': [0, 1]}
-        ))
-
-    return f'You have selected {value}', html.Div([dcc.Graph(figure=fig)])
-
+        return f'Probabilité que le client {value} soit solvable :', html.Div([dcc.Graph(figure=fig)])
+    return
 
 if __name__ == '__main__':
     # dash_app.run_server(debug=True)
-    app.run_server(debug=True, use_reloader=True)
+    app.run_server(debug=True, use_reloader=False)
